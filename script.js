@@ -1,34 +1,39 @@
-document.querySelectorAll(".cube").forEach(cube => {
-    let isDragging = false;
-    let offsetX, offsetY;
+// Your code here.
+const slider = document.querySelector('.items');
+let isDown = false;
+let startX;
+let scrollLeft;
 
-    cube.addEventListener("mousedown", (e) => {
-        isDragging = true;
-        offsetX = e.clientX - cube.offsetLeft;
-        offsetY = e.clientY - cube.offsetTop;
-        cube.style.cursor = "grabbing";
-    });
+slider.addEventListener('mousedown', (e) => {
+  isDown = true;
+  slider.classList.add('active');
+  startX = e.pageX - slider.offsetLeft;
+  scrollLeft = slider.scrollLeft;
+});
 
-    document.addEventListener("mousemove", (e) => {
-        if (!isDragging) return;
+slider.addEventListener('mouseleave', () => {
+  isDown = false;
+  slider.classList.remove('active');
+});
 
-        const container = document.querySelector(".container");
-        const containerRect = container.getBoundingClientRect();
-        const cubeSize = cube.offsetWidth;
+slider.addEventListener('mouseup', () => {
+  isDown = false;
+  slider.classList.remove('active');
+});
 
-        let newX = e.clientX - offsetX;
-        let newY = e.clientY - offsetY;
-
-        // Constrain within container
-        newX = Math.max(0, Math.min(newX, containerRect.width - cubeSize));
-        newY = Math.max(0, Math.min(newY, containerRect.height - cubeSize));
-
-        cube.style.left = `${newX}px`;
-        cube.style.top = `${newY}px`;
-    });
-
-    document.addEventListener("mouseup", () => {
-        isDragging = false;
-        cube.style.cursor = "grab";
-    });
+slider.addEventListener('mousemove', (e) => {
+  if (!isDown) return;
+  e.preventDefault();
+  
+  const x = e.pageX - slider.offsetLeft;
+  const walk = (x - startX) * 2; // Multiply for faster scroll speed
+  slider.scrollLeft = scrollLeft - walk;
+  
+  // Keep inside boundaries
+  if (slider.scrollLeft < 0) {
+    slider.scrollLeft = 0;
+  }
+  if (slider.scrollLeft > slider.scrollWidth - slider.clientWidth) {
+    slider.scrollLeft = slider.scrollWidth - slider.clientWidth;
+  }
 });
